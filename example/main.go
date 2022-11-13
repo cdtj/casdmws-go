@@ -35,12 +35,10 @@ func example(cli casdm.ClientInterface) error {
 	var newHandle, newRefNum string
 	creatorHandle := "cnt:UUID_HERE"
 	attrValsArr := []string{
-		"requestor",
-		"cnt:UUID_HERE",
-		"description",
-		"Hello World",
-		"category",
-		"pcat:12345",
+		"type", "I",
+		"requestor", "cnt:UUID_HERE",
+		"description", "Hello World",
+		"category", "pcat:12345",
 	}
 	propValsArr := []string{"prop1", "prop2"}
 	retValsArr := []string{"persistent_id", "ref_num"}

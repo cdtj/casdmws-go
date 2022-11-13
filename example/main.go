@@ -10,8 +10,8 @@ import (
 func main() {
 	logrus.SetLevel(logrus.InfoLevel)
 
-	pc := casdm.NewSoapClient("https://sdm/axis/services/USD_R11_WebService")
 	logrus.Println("running with prodClient")
+	pc := casdm.NewSoapClient("https://sdm/axis/services/USD_R11_WebService")
 	if err := example(pc); err != nil {
 		logrus.Errorln("prodClient failed with: ", err)
 	}

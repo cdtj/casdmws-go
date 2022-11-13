@@ -1,9 +1,8 @@
 package casdmwsgo
 
 import (
-	"log"
-
 	"github.com/fiorix/wsdl2go/soap"
+	"github.com/sirupsen/logrus"
 )
 
 // Namespace was auto-generated from WSDL.
@@ -11,8 +10,16 @@ var Namespace = "http://www.ca.com/UnicenterServicePlus/ServiceDesk"
 
 // NewUSD_WebServiceSoap creates an initializes a USD_WebServiceSoap.
 func NewUSD_WebServiceSoap(cli ClientInterface) USD_WebServiceSoap {
-	log.Printf("%T:%#v\n", cli, cli)
+	logrus.Debugf("%T:%#v", cli, cli)
 	return &usd_WebServiceSoap{cli}
+}
+
+// NewSoapClient is a quick definition of a proper SOAP USD WebServices ClientInterface
+func NewSoapClient(url string) ClientInterface {
+	return &soap.Client{
+		URL:       "https://sdm/axis/services/USD_R11_WebService",
+		Namespace: Namespace,
+	}
 }
 
 // USD_WebServiceSoap was auto-generated from WSDL

@@ -2,42 +2,34 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	casdm "github.com/cdtj/casdmws-go"
+	"github.com/sirupsen/logrus"
 )
 
-var mockDataSet map[casdm.Method][]casdm.MockData
-
 func main() {
-	f, err := os.OpenFile("./stdlog.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("Error opening file: %v", err)
+	logrus.SetLevel(logrus.InfoLevel)
+
+	pc := casdm.NewSoapClient("https://sdm/axis/services/USD_R11_WebService")
+	logrus.Println("running with prodClient")
+	if err := example(pc); err != nil {
+		logrus.Errorln("prodClient failed with: ", err)
 	}
-	defer f.Close()
-	log.SetOutput(f)
 
-	/* this is productive client */
-	/*
-		log.Println("\tProd Client")
-		doLogin(&soap.Client{
-			URL:       "https://servicedeskattachuat.datacom.co.nz/axis/services/USD_R11_WebService",
-			Namespace: casdm.Namespace,
-		}, "test", "test")
-	*/
+	logrus.Println("running with mockClient")
+	mc := casdm.NewMockClient(mockDataSet())
+	if err := example(mc); err != nil {
+		logrus.Errorln("mockClient failed with: ", err)
+	}
+}
 
-	/* here goes mock client */
-	mc := &casdm.MockClient{Mocks: mockDataSet}
-	log.Println("\tMock Client")
-
+func example(cli casdm.ClientInterface) error {
 	// logging in
-	loginResp, err := doLogin(mc, "admin", "admin")
+	loginResp, err := doLogin(cli, "admin", "admin")
 	if err != nil {
-		log.Println("err:", err)
-		return
+		return fmt.Errorf("login error: %s", err)
 	}
-	log.Println("Successful login, sid: ", *loginResp.LoginReturn)
+	logrus.Println("Successful login, sid: ", *loginResp.LoginReturn)
 
 	// creating incident
 	var newHandle, newRefNum string
@@ -52,24 +44,30 @@ func main() {
 	}
 	propValsArr := []string{"prop1", "prop2"}
 	retValsArr := []string{"persistent_id", "ref_num"}
-	crResp, err := createCr(mc, loginResp.LoginReturn, creatorHandle, &newHandle, &newRefNum, attrValsArr, propValsArr, retValsArr)
+	crResp, err := createCr(cli, loginResp.LoginReturn, creatorHandle, &newHandle, &newRefNum, attrValsArr, propValsArr, retValsArr)
 	if err != nil {
-		log.Println("err:", err)
-		return
+		return fmt.Errorf("createCr error: %s", err)
 	}
-	log.Printf("New request [%s] created: %s\n", *crResp.NewRequestNumber, *crResp.NewRequestHandle)
+	logrus.Println("New request [%s] created: %s\n", *crResp.NewRequestNumber, *crResp.NewRequestHandle)
+	return nil
 }
 
-func init() {
-	var loginErrData = &casdm.ErrData{"soapenv:Client", "Error - invalid login password", "", "Error - invalid login password", "1000"}
+func mockDataSet() casdm.MockDataSet {
+	var loginErrData = &casdm.ErrData{
+		FaultCode:    "soapenv:Client",
+		FaultString:  "Error - invalid login password",
+		FaultActor:   "",
+		ErrorMessage: "Error - invalid login password",
+		ErrorCode:    "1000",
+	}
 	loginErr := casdm.ExtractError(loginErrData)
 
-	mockDataSet = make(map[casdm.Method][]casdm.MockData)
-	mockDataSet[casdm.NewMethod("Login")] = []casdm.MockData{
-		casdm.MockData{
+	mds := make(casdm.MockDataSet)
+	mds[casdm.NewMethod("Login")] = []casdm.MockData{
+		{
 			Requests: []casdm.Request{
-				casdm.Request{Attr: "Username", Value: "admin"},
-				casdm.Request{Attr: "Password", Value: "admin"},
+				{Attr: "Username", Value: "admin"},
+				{Attr: "Password", Value: "admin"},
 			},
 			Response: casdm.Response{
 				ResponseData: casdm.OperationLoginResponse{
@@ -80,7 +78,7 @@ func init() {
 				Error: nil,
 			},
 		},
-		casdm.MockData{
+		{
 			Requests: []casdm.Request{},
 			Response: casdm.Response{
 				ResponseData: nil,
@@ -88,10 +86,10 @@ func init() {
 			},
 		},
 	}
-	mockDataSet[casdm.NewMethod("CreateRequest")] = []casdm.MockData{
-		casdm.MockData{
+	mds[casdm.NewMethod("CreateRequest")] = []casdm.MockData{
+		{
 			Requests: []casdm.Request{
-				casdm.Request{Attr: "category", Value: "pcat:1234"},
+				{Attr: "category", Value: "pcat:1234"},
 			},
 			Response: casdm.Response{
 				ResponseData: nil,
@@ -103,7 +101,7 @@ func init() {
 				})),
 			},
 		},
-		casdm.MockData{
+		{
 			Requests: []casdm.Request{},
 			Response: casdm.Response{
 				ResponseData: &casdm.OperationCreateRequestResponse{
@@ -117,6 +115,7 @@ func init() {
 			},
 		},
 	}
+	return mds
 }
 
 func doLogin(cli casdm.ClientInterface, username, password string) (*casdm.LoginResponse, error) {
@@ -143,14 +142,14 @@ func createCr(cli casdm.ClientInterface, sid *int,
 	propVals := casdm.ArrToAOS(propValsArr)
 	retVals := casdm.ArrToAOS(retValsArr)
 
-	resp, err := ws.CreateRequest(&casdm.CreateRequest{sid,
-		&creatorHandle,
-		attrVals,
-		propVals,
-		nil,
-		retVals,
-		newHandle,
-		newRefNum,
+	resp, err := ws.CreateRequest(&casdm.CreateRequest{Sid: sid,
+		CreatorHandle:    &creatorHandle,
+		AttrVals:         attrVals,
+		PropertyValues:   propVals,
+		Template:         nil,
+		Attributes:       retVals,
+		NewRequestHandle: newHandle,
+		NewRequestNumber: newRefNum,
 	})
 	if err != nil {
 		return nil, err

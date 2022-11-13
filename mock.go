@@ -10,6 +10,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/fiorix/wsdl2go/soap"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/html/charset"
 )
 
@@ -41,9 +42,18 @@ const errTpl = `<?xml version="1.0" encoding="UTF-8"?>
 // All lower case
 type Method string
 
+type MockDataSet map[Method][]MockData
+
 // MockClient is a fake SOAP client.
 type MockClient struct {
-	Mocks map[Method][]MockData
+	Mocks MockDataSet
+}
+
+// NewMockClient is a quick definition of a proper Mocked USD WebServices ClientInterface
+func NewMockClient(mocks MockDataSet) ClientInterface {
+	return &MockClient{
+		Mocks: mocks,
+	}
 }
 
 // MockData is a set of data that be validated,
@@ -81,7 +91,7 @@ func FakeRoundTrip(c *MockClient, action Method, in, out soap.Message) error {
 			ErrorMessage: err.Error(),
 		}))
 	}
-	log.Println(string(b))
+	logrus.Debugln(string(b))
 
 	doc := etree.NewDocument()
 	if err := doc.ReadFromBytes(b); err != nil {
@@ -91,12 +101,12 @@ func FakeRoundTrip(c *MockClient, action Method, in, out soap.Message) error {
 	}
 
 	root := doc.SelectElement("Envelope")
-	log.Println("ROOT element:", root.Tag)
+	logrus.Debugln("ROOT element:", root.Tag)
 
 	if mocks, found := c.Mocks[action]; found {
 		for _, m := range mocks {
 			if len(m.Requests) == 0 {
-				log.Println("Empty request data. Setting default response.")
+				logrus.Debugln("Empty request data. Setting default response.")
 				decodeOut(out, m.Response.ResponseData)
 				return m.Response.Error
 			}
@@ -117,7 +127,7 @@ func FakeRoundTrip(c *MockClient, action Method, in, out soap.Message) error {
 				wholeMatch = true
 			}
 			if wholeMatch {
-				log.Println("Whole request match. Setting response.")
+				logrus.Debugln("Whole request match. Setting response.")
 				err := decodeOut(out, m.Response.ResponseData)
 				if err != nil {
 					return fmt.Errorf(ExtractError(&ErrData{
@@ -144,7 +154,7 @@ func encodeIn(msg soap.Message) ([]byte, error) {
 	var b bytes.Buffer
 	err := xml.NewEncoder(&b).Encode(req)
 	if err != nil {
-		log.Println("err:", err)
+		logrus.Debugln("err:", err)
 		return nil, err
 	}
 	return b.Bytes(), nil
@@ -180,19 +190,19 @@ const (
 
 func printEl(el *etree.Element, attr, val *string, match *matchStatus) bool {
 	if len(el.ChildElements()) == 0 {
-		log.Printf("checking [%s / %s]", *attr, *val)
-		log.Println(el.GetPath(), "[", el.Tag, "]:", el.Text())
+		logrus.Debugf("checking [%s / %s]", *attr, *val)
+		logrus.Debugln(el.GetPath(), "[", el.Tag, "]:", el.Text())
 		if strings.Contains(el.GetPath(), "/string") {
-			log.Println("\tnext")
-			// log.Println("\tnextval:", *attr, "@", *val)
+			logrus.Debugln("\tnext")
+			// logrus.Debugln("\tnextval:", *attr, "@", *val)
 			if el.Text() == *attr {
 				*match = matchStatusNextVal
 				return false
 			}
 			if *match == matchStatusNextVal {
 				if el.Text() == *val {
-					log.Println("\tmatches")
-					// log.Println("\tmatched:", *attr, "@", *val)
+					logrus.Debugln("\tmatches")
+					// logrus.Debugln("\tmatched:", *attr, "@", *val)
 					*match = matchStatusFound
 					return true
 				}
@@ -200,21 +210,21 @@ func printEl(el *etree.Element, attr, val *string, match *matchStatus) bool {
 			return false
 		}
 		if strings.Contains(el.GetPath(), *attr) {
-			log.Println("\tcontains")
-			// log.Println("\tcontains:", el.GetPath(), "@", *val)
+			logrus.Debugln("\tcontains")
+			// logrus.Debugln("\tcontains:", el.GetPath(), "@", *val)
 			if el.Text() == *val {
-				log.Println("\tmatches")
-				// log.Println("\tmatched:", *attr, "@", *val)
+				logrus.Debugln("\tmatches")
+				// logrus.Debugln("\tmatched:", *attr, "@", *val)
 				*match = matchStatusFound
 				return true
 			}
 		} else {
-			log.Println("\tnot contains:", el.GetPath(), "@", *val)
+			logrus.Debugln("\tnot contains:", el.GetPath(), "@", *val)
 		}
 	}
 	for _, elm := range el.ChildElements() {
 		if printEl(elm, attr, val, match) {
-			log.Println("breaking loop for:", *attr, "@", *val)
+			logrus.Debugln("breaking loop for:", *attr, "@", *val)
 			return true
 		}
 	}
@@ -262,39 +272,4 @@ func processErrorTemplate(t *template.Template, vars interface{}) string {
 // by lowering case, nothing special
 func NewMethod(name string) Method {
 	return Method(strings.ToLower(name))
-}
-
-// Declaring variables to create pointers is a bit boring,
-// so here is some faster way, hope it's not illigal
-
-// NewInt is a wrapper to create inline pointer to int
-func NewInt(n int) *int {
-	return &n
-}
-
-// NewString is a wrapper to create inline pointer to string
-func NewString(s string) *string {
-	return &s
-}
-
-// ArrToAOS is a wrapper to create inline pointer to Array of String
-func ArrToAOS(arr []string) *ArrayOfString {
-	arrToPTR := make([]*string, 0, len(arr))
-	for k := range arr {
-		arrToPTR = append(arrToPTR, &arr[k])
-	}
-	return &ArrayOfString{
-		String: arrToPTR,
-	}
-}
-
-// ArrToAOI is a wrapper to create inline pointer to Array of Int
-func ArrToAOI(arr []int) *ArrayOfInt {
-	arrToPTR := make([]*int, 0, len(arr))
-	for k := range arr {
-		arrToPTR = append(arrToPTR, &arr[k])
-	}
-	return &ArrayOfInt{
-		Integer: arrToPTR,
-	}
 }

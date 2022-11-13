@@ -17,7 +17,7 @@ func NewUSD_WebServiceSoap(cli ClientInterface) USD_WebServiceSoap {
 // NewSoapClient is a quick definition of a proper SOAP USD WebServices ClientInterface
 func NewSoapClient(url string) ClientInterface {
 	return &soap.Client{
-		URL:       "https://sdm/axis/services/USD_R11_WebService",
+		URL:       url,
 		Namespace: Namespace,
 	}
 }

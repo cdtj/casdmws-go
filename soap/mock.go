@@ -1,4 +1,4 @@
-package casdmwsgo
+package soap
 
 import (
 	"bytes"
@@ -14,15 +14,6 @@ import (
 	"golang.org/x/net/html/charset"
 )
 
-// ErrData is a struct for mocking errors with a template
-type ErrData struct {
-	FaultCode    string
-	FaultString  string
-	FaultActor   string
-	ErrorMessage string
-	ErrorCode    string
-}
-
 const errTpl = `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<soapenv:Body>
@@ -31,7 +22,7 @@ const errTpl = `<?xml version="1.0" encoding="UTF-8"?>
 			<faultstring>{{.FaultString}}</faultstring>
 			<faultactor>{{.FaultActor}}</faultactor>
 			<detail>
-				<ErrorMessage>{{.ErrorMessage}}</ErrorMessage>
+				<ErrorMessage>{{.ErrorMsg}}</ErrorMessage>
 				<ErrorCode>{{.ErrorCode}}</ErrorCode>
 			</detail>
 		</soapenv:Fault>
@@ -39,18 +30,19 @@ const errTpl = `<?xml version="1.0" encoding="UTF-8"?>
 </soapenv:Envelope>`
 
 // Method should match mocked method.
-// All lower case
+// All lowercase.
 type Method string
 
+// MockDataSet must contain all mocket method with their data.
 type MockDataSet map[Method][]MockData
 
-// MockClient is a fake SOAP client.
+// MockClient is a mock SOAP client.
 type MockClient struct {
 	Mocks MockDataSet
 }
 
 // NewMockClient is a quick definition of a proper Mocked USD WebServices ClientInterface
-func NewMockClient(mocks MockDataSet) ClientInterface {
+func NewMockClient(mocks MockDataSet) SdmSoapInterface {
 	return &MockClient{
 		Mocks: mocks,
 	}
@@ -87,26 +79,36 @@ type Response struct {
 func FakeRoundTrip(c *MockClient, action Method, in, out soap.Message) error {
 	b, err := encodeIn(in)
 	if err != nil {
-		return fmt.Errorf(ExtractError(&ErrData{
-			ErrorMessage: err.Error(),
-		}))
+		if serr := ParseSoapError(err); serr != nil {
+			return serr
+		}
+		return err
 	}
-	logrus.Debugln(string(b))
+	logrus.WithFields(logrus.Fields{
+		"action": action,
+		"in":     string(b),
+	}).Debugln("FakeRoundTrip")
 
 	doc := etree.NewDocument()
 	if err := doc.ReadFromBytes(b); err != nil {
-		return fmt.Errorf(ExtractError(&ErrData{
-			ErrorMessage: err.Error(),
-		}))
+		if serr := ParseSoapError(err); serr != nil {
+			return serr
+		}
+		return err
 	}
 
 	root := doc.SelectElement("Envelope")
-	logrus.Debugln("ROOT element:", root.Tag)
-
+	logrus.WithFields(logrus.Fields{
+		"action": action,
+		"root":   root.Tag,
+	}).Debugln("FakeRoundTrip")
 	if mocks, found := c.Mocks[action]; found {
 		for _, m := range mocks {
 			if len(m.Requests) == 0 {
-				logrus.Debugln("Empty request data. Setting default response.")
+				logrus.WithFields(logrus.Fields{
+					"action": action,
+					"result": "Empty request data. Setting default response.",
+				}).Debugln("FakeRoundTrip")
 				decodeOut(out, m.Response.ResponseData)
 				return m.Response.Error
 			}
@@ -127,23 +129,23 @@ func FakeRoundTrip(c *MockClient, action Method, in, out soap.Message) error {
 				wholeMatch = true
 			}
 			if wholeMatch {
-				logrus.Debugln("Whole request match. Setting response.")
+				logrus.WithFields(logrus.Fields{
+					"action": action,
+					"result": "Whole request match. Setting response.",
+				}).Debugln("FakeRoundTrip")
 				err := decodeOut(out, m.Response.ResponseData)
 				if err != nil {
-					return fmt.Errorf(ExtractError(&ErrData{
-						ErrorMessage: err.Error(),
-					}))
+					if serr := ParseSoapError(err); serr != nil {
+						return serr
+					}
+					return err
 				}
 				return m.Response.Error
 			}
 		}
-		return fmt.Errorf(ExtractError(&ErrData{
-			ErrorMessage: fmt.Sprintf("'%s' has no matching mocks", action),
-		}))
+		return fmt.Errorf("'%s' has no matching mocks", action)
 	}
-	return fmt.Errorf(ExtractError(&ErrData{
-		ErrorMessage: fmt.Sprintf("'%s' is not specified in Mocks map", action),
-	}))
+	return fmt.Errorf("'%s' is not specified in Mocks map", action)
 }
 
 func encodeIn(msg soap.Message) ([]byte, error) {
@@ -154,7 +156,10 @@ func encodeIn(msg soap.Message) ([]byte, error) {
 	var b bytes.Buffer
 	err := xml.NewEncoder(&b).Encode(req)
 	if err != nil {
-		logrus.Debugln("err:", err)
+		logrus.WithFields(logrus.Fields{
+			"msg": msg,
+			"err": err,
+		}).Error("encodeIn failed")
 		return nil, err
 	}
 	return b.Bytes(), nil
@@ -175,6 +180,10 @@ func decodeOut(msg soap.Message, msgData soap.Message) error {
 	decoder.CharsetReader = charset.NewReaderLabel
 	err = decoder.Decode(&marshalStructure)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"msg": msg,
+			"err": err,
+		}).Error("decodeOut failed")
 		return err
 	}
 	return nil
@@ -190,19 +199,22 @@ const (
 
 func printEl(el *etree.Element, attr, val *string, match *matchStatus) bool {
 	if len(el.ChildElements()) == 0 {
-		logrus.Debugf("checking [%s / %s]", *attr, *val)
-		logrus.Debugln(el.GetPath(), "[", el.Tag, "]:", el.Text())
+		logrus.WithFields(logrus.Fields{
+			"attr":  *attr,
+			"val":   *val,
+			"match": *match,
+			"path":  el.GetPath(),
+			"tag":   el.Tag,
+			"text":  el.Text(),
+		}).Trace("printEl")
+
 		if strings.Contains(el.GetPath(), "/string") {
-			logrus.Debugln("\tnext")
-			// logrus.Debugln("\tnextval:", *attr, "@", *val)
 			if el.Text() == *attr {
 				*match = matchStatusNextVal
 				return false
 			}
 			if *match == matchStatusNextVal {
 				if el.Text() == *val {
-					logrus.Debugln("\tmatches")
-					// logrus.Debugln("\tmatched:", *attr, "@", *val)
 					*match = matchStatusFound
 					return true
 				}
@@ -210,21 +222,19 @@ func printEl(el *etree.Element, attr, val *string, match *matchStatus) bool {
 			return false
 		}
 		if strings.Contains(el.GetPath(), *attr) {
-			logrus.Debugln("\tcontains")
-			// logrus.Debugln("\tcontains:", el.GetPath(), "@", *val)
 			if el.Text() == *val {
-				logrus.Debugln("\tmatches")
-				// logrus.Debugln("\tmatched:", *attr, "@", *val)
 				*match = matchStatusFound
 				return true
 			}
-		} else {
-			logrus.Debugln("\tnot contains:", el.GetPath(), "@", *val)
 		}
 	}
 	for _, elm := range el.ChildElements() {
 		if printEl(elm, attr, val, match) {
-			logrus.Debugln("breaking loop for:", *attr, "@", *val)
+			logrus.WithFields(logrus.Fields{
+				"attr":  *attr,
+				"val":   *val,
+				"match": *match,
+			}).Trace("breaking loop")
 			return true
 		}
 	}
@@ -247,9 +257,10 @@ func (c *MockClient) RoundTripWithAction(soapAction string, in, out soap.Message
 }
 
 // ExtractError is extracting Error struct to SDM SOAP-like template
-func ExtractError(errData *ErrData) string {
+//
+// Deprecated.
+func ExtractError(errData *SoapError) string {
 	tmpl, err := template.New("tmpl").Parse(errTpl)
-
 	if err != nil {
 		// this should not fail, if yes just quit
 		log.Fatal("err:", err)
@@ -257,6 +268,7 @@ func ExtractError(errData *ErrData) string {
 	return processErrorTemplate(tmpl, errData)
 }
 
+// Deprecated.
 func processErrorTemplate(t *template.Template, vars interface{}) string {
 	var tmplBytes bytes.Buffer
 

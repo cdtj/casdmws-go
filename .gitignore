@@ -1,2 +1,7 @@
 # ignoring logs
 *.log
+example/*.log
+# ignorin cerеs
+example/*.p12
+# privacy
+example/conf/private.yaml

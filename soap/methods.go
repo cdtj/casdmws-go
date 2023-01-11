@@ -1,30 +1,16 @@
-package casdmwsgo
+package soap
 
-import (
-	"github.com/fiorix/wsdl2go/soap"
-	"github.com/sirupsen/logrus"
-)
+// SdmSoap is a struct that implements Client for CA Service Desk SOAP API
+type SdmSoap struct {
+	SdmSoapInterface
+}
 
 // Namespace was auto-generated from WSDL.
 var Namespace = "http://www.ca.com/UnicenterServicePlus/ServiceDesk"
 
-// NewUSD_WebServiceSoap creates an initializes a USD_WebServiceSoap.
-func NewUSD_WebServiceSoap(cli ClientInterface) USD_WebServiceSoap {
-	logrus.Debugf("%T:%#v", cli, cli)
-	return &usd_WebServiceSoap{cli}
-}
-
-// NewSoapClient is a quick definition of a proper SOAP USD WebServices ClientInterface
-func NewSoapClient(url string) ClientInterface {
-	return &soap.Client{
-		URL:       url,
-		Namespace: Namespace,
-	}
-}
-
-// USD_WebServiceSoap was auto-generated from WSDL
+// SoapWebService was auto-generated from WSDL
 // and defines interface for the remote service. Useful for testing.
-type USD_WebServiceSoap interface {
+type SoapWebService interface {
 	// AddAssetLog was auto-generated from WSDL.
 	AddAssetLog(AddAssetLog *AddAssetLog) (*AddAssetLogResponse, error)
 
@@ -2990,19 +2976,16 @@ type OperationUpdateRatingResponse struct {
 	UpdateRatingResponse *UpdateRatingResponse `xml:"updateRatingResponse,omitempty" json:"updateRatingResponse,omitempty" yaml:"updateRatingResponse,omitempty"`
 }
 
-// usd_WebServiceSoap implements the USD_WebServiceSoap interface.
-type usd_WebServiceSoap struct {
-	cli ClientInterface
-}
-
-type ClientInterface interface {
-	RoundTrip(in, out soap.Message) error
-	RoundTripWithAction(soapAction string, in, out soap.Message) error
-	RoundTripSoap12(action string, in, out soap.Message) error
+// LoginCall is unified login method which reduces need to implement
+// preparation for each method manually.
+//
+// Func name caused by conflict w/ SOAP legacy Login method.
+func (p *SdmSoap) LoginCall(login LoginIntfc) (*int, error) {
+	return login.Login(p)
 }
 
 // AddAssetLog was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AddAssetLog(AddAssetLog *AddAssetLog) (*AddAssetLogResponse, error) {
+func (p *SdmSoap) AddAssetLog(AddAssetLog *AddAssetLog) (*AddAssetLogResponse, error) {
 	α := struct {
 		OperationAddAssetLogRequest `xml:"impl:addAssetLog"`
 	}{
@@ -3014,14 +2997,14 @@ func (p *usd_WebServiceSoap) AddAssetLog(AddAssetLog *AddAssetLog) (*AddAssetLog
 	γ := struct {
 		OperationAddAssetLogResponse `xml:"addAssetLogResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AddAssetLog", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AddAssetLog", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AddAssetLogResponse, nil
 }
 
 // AddBookmark was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AddBookmark(AddBookmark *AddBookmark) (*AddBookmarkResponse, error) {
+func (p *SdmSoap) AddBookmark(AddBookmark *AddBookmark) (*AddBookmarkResponse, error) {
 	α := struct {
 		OperationAddBookmarkRequest `xml:"impl:addBookmark"`
 	}{
@@ -3033,14 +3016,14 @@ func (p *usd_WebServiceSoap) AddBookmark(AddBookmark *AddBookmark) (*AddBookmark
 	γ := struct {
 		OperationAddBookmarkResponse `xml:"addBookmarkResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AddBookmark", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AddBookmark", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AddBookmarkResponse, nil
 }
 
 // AddComment was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AddComment(AddComment *AddComment) (*AddCommentResponse, error) {
+func (p *SdmSoap) AddComment(AddComment *AddComment) (*AddCommentResponse, error) {
 	α := struct {
 		OperationAddCommentRequest `xml:"impl:addComment"`
 	}{
@@ -3052,14 +3035,14 @@ func (p *usd_WebServiceSoap) AddComment(AddComment *AddComment) (*AddCommentResp
 	γ := struct {
 		OperationAddCommentResponse `xml:"addCommentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AddComment", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AddComment", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AddCommentResponse, nil
 }
 
 // AddMemberToGroup was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AddMemberToGroup(AddMemberToGroup *AddMemberToGroup) (*AddMemberToGroupResponse, error) {
+func (p *SdmSoap) AddMemberToGroup(AddMemberToGroup *AddMemberToGroup) (*AddMemberToGroupResponse, error) {
 	α := struct {
 		OperationAddMemberToGroupRequest `xml:"impl:addMemberToGroup"`
 	}{
@@ -3071,14 +3054,14 @@ func (p *usd_WebServiceSoap) AddMemberToGroup(AddMemberToGroup *AddMemberToGroup
 	γ := struct {
 		OperationAddMemberToGroupResponse `xml:"addMemberToGroupResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AddMemberToGroup", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AddMemberToGroup", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AddMemberToGroupResponse, nil
 }
 
 // AttachChangeToRequest was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AttachChangeToRequest(AttachChangeToRequest *AttachChangeToRequest) (*AttachChangeToRequestResponse, error) {
+func (p *SdmSoap) AttachChangeToRequest(AttachChangeToRequest *AttachChangeToRequest) (*AttachChangeToRequestResponse, error) {
 	α := struct {
 		OperationAttachChangeToRequestRequest `xml:"impl:attachChangeToRequest"`
 	}{
@@ -3090,14 +3073,14 @@ func (p *usd_WebServiceSoap) AttachChangeToRequest(AttachChangeToRequest *Attach
 	γ := struct {
 		OperationAttachChangeToRequestResponse `xml:"attachChangeToRequestResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AttachChangeToRequest", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AttachChangeToRequest", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AttachChangeToRequestResponse, nil
 }
 
 // AttachURLLink was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AttachURLLink(AttachURLLink *AttachURLLink) (*AttachURLLinkResponse, error) {
+func (p *SdmSoap) AttachURLLink(AttachURLLink *AttachURLLink) (*AttachURLLinkResponse, error) {
 	α := struct {
 		OperationAttachURLLinkRequest `xml:"impl:attachURLLink"`
 	}{
@@ -3109,14 +3092,14 @@ func (p *usd_WebServiceSoap) AttachURLLink(AttachURLLink *AttachURLLink) (*Attac
 	γ := struct {
 		OperationAttachURLLinkResponse `xml:"attachURLLinkResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AttachURLLink", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AttachURLLink", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AttachURLLinkResponse, nil
 }
 
 // AttachURLLinkToTicket was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AttachURLLinkToTicket(AttachURLLinkToTicket *AttachURLLinkToTicket) (*AttachURLLinkToTicketResponse, error) {
+func (p *SdmSoap) AttachURLLinkToTicket(AttachURLLinkToTicket *AttachURLLinkToTicket) (*AttachURLLinkToTicketResponse, error) {
 	α := struct {
 		OperationAttachURLLinkToTicketRequest `xml:"impl:attachURLLinkToTicket"`
 	}{
@@ -3128,14 +3111,14 @@ func (p *usd_WebServiceSoap) AttachURLLinkToTicket(AttachURLLinkToTicket *Attach
 	γ := struct {
 		OperationAttachURLLinkToTicketResponse `xml:"attachURLLinkToTicketResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AttachURLLinkToTicket", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AttachURLLinkToTicket", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AttachURLLinkToTicketResponse, nil
 }
 
 // AttmntFolderLinkCount was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) AttmntFolderLinkCount(AttmntFolderLinkCount *AttmntFolderLinkCount) (*AttmntFolderLinkCountResponse, error) {
+func (p *SdmSoap) AttmntFolderLinkCount(AttmntFolderLinkCount *AttmntFolderLinkCount) (*AttmntFolderLinkCountResponse, error) {
 	α := struct {
 		OperationAttmntFolderLinkCountRequest `xml:"impl:attmntFolderLinkCount"`
 	}{
@@ -3147,14 +3130,14 @@ func (p *usd_WebServiceSoap) AttmntFolderLinkCount(AttmntFolderLinkCount *Attmnt
 	γ := struct {
 		OperationAttmntFolderLinkCountResponse `xml:"attmntFolderLinkCountResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("AttmntFolderLinkCount", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("AttmntFolderLinkCount", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.AttmntFolderLinkCountResponse, nil
 }
 
 // CallServerMethod was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CallServerMethod(CallServerMethod *CallServerMethod) (*CallServerMethodResponse, error) {
+func (p *SdmSoap) CallServerMethod(CallServerMethod *CallServerMethod) (*CallServerMethodResponse, error) {
 	α := struct {
 		OperationCallServerMethodRequest `xml:"impl:callServerMethod"`
 	}{
@@ -3166,14 +3149,14 @@ func (p *usd_WebServiceSoap) CallServerMethod(CallServerMethod *CallServerMethod
 	γ := struct {
 		OperationCallServerMethodResponse `xml:"callServerMethodResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CallServerMethod", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CallServerMethod", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CallServerMethodResponse, nil
 }
 
 // ChangeStatus was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) ChangeStatus(ChangeStatus *ChangeStatus) (*ChangeStatusResponse, error) {
+func (p *SdmSoap) ChangeStatus(ChangeStatus *ChangeStatus) (*ChangeStatusResponse, error) {
 	α := struct {
 		OperationChangeStatusRequest `xml:"impl:changeStatus"`
 	}{
@@ -3185,14 +3168,14 @@ func (p *usd_WebServiceSoap) ChangeStatus(ChangeStatus *ChangeStatus) (*ChangeSt
 	γ := struct {
 		OperationChangeStatusResponse `xml:"changeStatusResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("ChangeStatus", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("ChangeStatus", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.ChangeStatusResponse, nil
 }
 
 // ClearNotification was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) ClearNotification(ClearNotification *ClearNotification) (*ClearNotificationResponse, error) {
+func (p *SdmSoap) ClearNotification(ClearNotification *ClearNotification) (*ClearNotificationResponse, error) {
 	α := struct {
 		OperationClearNotificationRequest `xml:"impl:clearNotification"`
 	}{
@@ -3204,14 +3187,14 @@ func (p *usd_WebServiceSoap) ClearNotification(ClearNotification *ClearNotificat
 	γ := struct {
 		OperationClearNotificationResponse `xml:"clearNotificationResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("ClearNotification", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("ClearNotification", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.ClearNotificationResponse, nil
 }
 
 // CloseTicket was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CloseTicket(CloseTicket *CloseTicket) (*CloseTicketResponse, error) {
+func (p *SdmSoap) CloseTicket(CloseTicket *CloseTicket) (*CloseTicketResponse, error) {
 	α := struct {
 		OperationCloseTicketRequest `xml:"impl:closeTicket"`
 	}{
@@ -3223,14 +3206,14 @@ func (p *usd_WebServiceSoap) CloseTicket(CloseTicket *CloseTicket) (*CloseTicket
 	γ := struct {
 		OperationCloseTicketResponse `xml:"closeTicketResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CloseTicket", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CloseTicket", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CloseTicketResponse, nil
 }
 
 // CreateActivityLog was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateActivityLog(CreateActivityLog *CreateActivityLog) (*CreateActivityLogResponse, error) {
+func (p *SdmSoap) CreateActivityLog(CreateActivityLog *CreateActivityLog) (*CreateActivityLogResponse, error) {
 	α := struct {
 		OperationCreateActivityLogRequest `xml:"impl:createActivityLog"`
 	}{
@@ -3242,14 +3225,14 @@ func (p *usd_WebServiceSoap) CreateActivityLog(CreateActivityLog *CreateActivity
 	γ := struct {
 		OperationCreateActivityLogResponse `xml:"createActivityLogResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateActivityLog", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateActivityLog", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateActivityLogResponse, nil
 }
 
 // CreateAsset was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateAsset(CreateAsset *CreateAsset) (*CreateAssetResponse, error) {
+func (p *SdmSoap) CreateAsset(CreateAsset *CreateAsset) (*CreateAssetResponse, error) {
 	α := struct {
 		OperationCreateAssetRequest `xml:"impl:createAsset"`
 	}{
@@ -3261,14 +3244,14 @@ func (p *usd_WebServiceSoap) CreateAsset(CreateAsset *CreateAsset) (*CreateAsset
 	γ := struct {
 		OperationCreateAssetResponse `xml:"createAssetResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateAsset", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateAsset", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateAssetResponse, nil
 }
 
 // CreateAssetParentChildRelationship was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateAssetParentChildRelationship(CreateAssetParentChildRelationship *CreateAssetParentChildRelationship) (*CreateAssetParentChildRelationshipResponse, error) {
+func (p *SdmSoap) CreateAssetParentChildRelationship(CreateAssetParentChildRelationship *CreateAssetParentChildRelationship) (*CreateAssetParentChildRelationshipResponse, error) {
 	α := struct {
 		OperationCreateAssetParentChildRelationshipRequest `xml:"impl:createAssetParentChildRelationship"`
 	}{
@@ -3280,14 +3263,14 @@ func (p *usd_WebServiceSoap) CreateAssetParentChildRelationship(CreateAssetParen
 	γ := struct {
 		OperationCreateAssetParentChildRelationshipResponse `xml:"createAssetParentChildRelationshipResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateAssetParentChildRelationship", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateAssetParentChildRelationship", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateAssetParentChildRelationshipResponse, nil
 }
 
 // CreateAttachment was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateAttachment(CreateAttachment *CreateAttachment) (*CreateAttachmentResponse, error) {
+func (p *SdmSoap) CreateAttachment(CreateAttachment *CreateAttachment) (*CreateAttachmentResponse, error) {
 	α := struct {
 		OperationCreateAttachmentRequest `xml:"impl:createAttachment"`
 	}{
@@ -3299,14 +3282,14 @@ func (p *usd_WebServiceSoap) CreateAttachment(CreateAttachment *CreateAttachment
 	γ := struct {
 		OperationCreateAttachmentResponse `xml:"createAttachmentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateAttachment", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateAttachment", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateAttachmentResponse, nil
 }
 
 // CreateAttmnt was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateAttmnt(CreateAttmnt *CreateAttmnt) (*CreateAttmntResponse, error) {
+func (p *SdmSoap) CreateAttmnt(CreateAttmnt *CreateAttmnt) (*CreateAttmntResponse, error) {
 	α := struct {
 		OperationCreateAttmntRequest `xml:"impl:createAttmnt"`
 	}{
@@ -3318,14 +3301,14 @@ func (p *usd_WebServiceSoap) CreateAttmnt(CreateAttmnt *CreateAttmnt) (*CreateAt
 	γ := struct {
 		OperationCreateAttmntResponse `xml:"createAttmntResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateAttmnt", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateAttmnt", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateAttmntResponse, nil
 }
 
 // CreateChangeOrder was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateChangeOrder(CreateChangeOrder *CreateChangeOrder) (*CreateChangeOrderResponse, error) {
+func (p *SdmSoap) CreateChangeOrder(CreateChangeOrder *CreateChangeOrder) (*CreateChangeOrderResponse, error) {
 	α := struct {
 		OperationCreateChangeOrderRequest `xml:"impl:createChangeOrder"`
 	}{
@@ -3337,14 +3320,14 @@ func (p *usd_WebServiceSoap) CreateChangeOrder(CreateChangeOrder *CreateChangeOr
 	γ := struct {
 		OperationCreateChangeOrderResponse `xml:"createChangeOrderResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateChangeOrder", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateChangeOrder", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateChangeOrderResponse, nil
 }
 
 // CreateDocument was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateDocument(CreateDocument *CreateDocument) (*CreateDocumentResponse, error) {
+func (p *SdmSoap) CreateDocument(CreateDocument *CreateDocument) (*CreateDocumentResponse, error) {
 	α := struct {
 		OperationCreateDocumentRequest `xml:"impl:createDocument"`
 	}{
@@ -3356,14 +3339,14 @@ func (p *usd_WebServiceSoap) CreateDocument(CreateDocument *CreateDocument) (*Cr
 	γ := struct {
 		OperationCreateDocumentResponse `xml:"createDocumentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateDocument", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateDocument", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateDocumentResponse, nil
 }
 
 // CreateFolder was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateFolder(CreateFolder *CreateFolder) (*CreateFolderResponse, error) {
+func (p *SdmSoap) CreateFolder(CreateFolder *CreateFolder) (*CreateFolderResponse, error) {
 	α := struct {
 		OperationCreateFolderRequest `xml:"impl:createFolder"`
 	}{
@@ -3375,14 +3358,14 @@ func (p *usd_WebServiceSoap) CreateFolder(CreateFolder *CreateFolder) (*CreateFo
 	γ := struct {
 		OperationCreateFolderResponse `xml:"createFolderResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateFolder", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateFolder", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateFolderResponse, nil
 }
 
 // CreateIssue was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateIssue(CreateIssue *CreateIssue) (*CreateIssueResponse, error) {
+func (p *SdmSoap) CreateIssue(CreateIssue *CreateIssue) (*CreateIssueResponse, error) {
 	α := struct {
 		OperationCreateIssueRequest `xml:"impl:createIssue"`
 	}{
@@ -3394,14 +3377,14 @@ func (p *usd_WebServiceSoap) CreateIssue(CreateIssue *CreateIssue) (*CreateIssue
 	γ := struct {
 		OperationCreateIssueResponse `xml:"createIssueResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateIssue", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateIssue", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateIssueResponse, nil
 }
 
 // CreateLrelRelationships was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateLrelRelationships(CreateLrelRelationships *CreateLrelRelationships) (*CreateLrelRelationshipsResponse, error) {
+func (p *SdmSoap) CreateLrelRelationships(CreateLrelRelationships *CreateLrelRelationships) (*CreateLrelRelationshipsResponse, error) {
 	α := struct {
 		OperationCreateLrelRelationshipsRequest `xml:"impl:createLrelRelationships"`
 	}{
@@ -3413,14 +3396,14 @@ func (p *usd_WebServiceSoap) CreateLrelRelationships(CreateLrelRelationships *Cr
 	γ := struct {
 		OperationCreateLrelRelationshipsResponse `xml:"createLrelRelationshipsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateLrelRelationships", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateLrelRelationships", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateLrelRelationshipsResponse, nil
 }
 
 // CreateObject was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateObject(CreateObject *CreateObject) (*CreateObjectResponse, error) {
+func (p *SdmSoap) CreateObject(CreateObject *CreateObject) (*CreateObjectResponse, error) {
 	α := struct {
 		OperationCreateObjectRequest `xml:"impl:createObject"`
 	}{
@@ -3432,14 +3415,14 @@ func (p *usd_WebServiceSoap) CreateObject(CreateObject *CreateObject) (*CreateOb
 	γ := struct {
 		OperationCreateObjectResponse `xml:"createObjectResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateObject", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateObject", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateObjectResponse, nil
 }
 
 // CreateQuickTicket was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateQuickTicket(CreateQuickTicket *CreateQuickTicket) (*CreateQuickTicketResponse, error) {
+func (p *SdmSoap) CreateQuickTicket(CreateQuickTicket *CreateQuickTicket) (*CreateQuickTicketResponse, error) {
 	α := struct {
 		OperationCreateQuickTicketRequest `xml:"impl:createQuickTicket"`
 	}{
@@ -3451,14 +3434,14 @@ func (p *usd_WebServiceSoap) CreateQuickTicket(CreateQuickTicket *CreateQuickTic
 	γ := struct {
 		OperationCreateQuickTicketResponse `xml:"createQuickTicketResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateQuickTicket", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateQuickTicket", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateQuickTicketResponse, nil
 }
 
 // CreateRequest was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateRequest(CreateRequest *CreateRequest) (*CreateRequestResponse, error) {
+func (p *SdmSoap) CreateRequest(CreateRequest *CreateRequest) (*CreateRequestResponse, error) {
 	α := struct {
 		OperationCreateRequestRequest `xml:"impl:createRequest"`
 	}{
@@ -3470,14 +3453,14 @@ func (p *usd_WebServiceSoap) CreateRequest(CreateRequest *CreateRequest) (*Creat
 	γ := struct {
 		OperationCreateRequestResponse `xml:"createRequestResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateRequest", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateRequest", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateRequestResponse, nil
 }
 
 // CreateTicket was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateTicket(CreateTicket *CreateTicket) (*CreateTicketResponse, error) {
+func (p *SdmSoap) CreateTicket(CreateTicket *CreateTicket) (*CreateTicketResponse, error) {
 	α := struct {
 		OperationCreateTicketRequest `xml:"impl:createTicket"`
 	}{
@@ -3489,14 +3472,14 @@ func (p *usd_WebServiceSoap) CreateTicket(CreateTicket *CreateTicket) (*CreateTi
 	γ := struct {
 		OperationCreateTicketResponse `xml:"createTicketResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateTicket", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateTicket", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateTicketResponse, nil
 }
 
 // CreateWorkFlowTask was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) CreateWorkFlowTask(CreateWorkFlowTask *CreateWorkFlowTask) (*CreateWorkFlowTaskResponse, error) {
+func (p *SdmSoap) CreateWorkFlowTask(CreateWorkFlowTask *CreateWorkFlowTask) (*CreateWorkFlowTaskResponse, error) {
 	α := struct {
 		OperationCreateWorkFlowTaskRequest `xml:"impl:createWorkFlowTask"`
 	}{
@@ -3508,14 +3491,14 @@ func (p *usd_WebServiceSoap) CreateWorkFlowTask(CreateWorkFlowTask *CreateWorkFl
 	γ := struct {
 		OperationCreateWorkFlowTaskResponse `xml:"createWorkFlowTaskResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("CreateWorkFlowTask", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("CreateWorkFlowTask", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.CreateWorkFlowTaskResponse, nil
 }
 
 // DeleteBookmark was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DeleteBookmark(DeleteBookmark *DeleteBookmark) (*DeleteBookmarkResponse, error) {
+func (p *SdmSoap) DeleteBookmark(DeleteBookmark *DeleteBookmark) (*DeleteBookmarkResponse, error) {
 	α := struct {
 		OperationDeleteBookmarkRequest `xml:"impl:deleteBookmark"`
 	}{
@@ -3527,14 +3510,14 @@ func (p *usd_WebServiceSoap) DeleteBookmark(DeleteBookmark *DeleteBookmark) (*De
 	γ := struct {
 		OperationDeleteBookmarkResponse `xml:"deleteBookmarkResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DeleteBookmark", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DeleteBookmark", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DeleteBookmarkResponse, nil
 }
 
 // DeleteComment was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DeleteComment(DeleteComment *DeleteComment) (*DeleteCommentResponse, error) {
+func (p *SdmSoap) DeleteComment(DeleteComment *DeleteComment) (*DeleteCommentResponse, error) {
 	α := struct {
 		OperationDeleteCommentRequest `xml:"impl:deleteComment"`
 	}{
@@ -3546,14 +3529,14 @@ func (p *usd_WebServiceSoap) DeleteComment(DeleteComment *DeleteComment) (*Delet
 	γ := struct {
 		OperationDeleteCommentResponse `xml:"deleteCommentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DeleteComment", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DeleteComment", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DeleteCommentResponse, nil
 }
 
 // DeleteDocument was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DeleteDocument(DeleteDocument *DeleteDocument) (*DeleteDocumentResponse, error) {
+func (p *SdmSoap) DeleteDocument(DeleteDocument *DeleteDocument) (*DeleteDocumentResponse, error) {
 	α := struct {
 		OperationDeleteDocumentRequest `xml:"impl:deleteDocument"`
 	}{
@@ -3565,14 +3548,14 @@ func (p *usd_WebServiceSoap) DeleteDocument(DeleteDocument *DeleteDocument) (*De
 	γ := struct {
 		OperationDeleteDocumentResponse `xml:"deleteDocumentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DeleteDocument", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DeleteDocument", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DeleteDocumentResponse, nil
 }
 
 // DeleteWorkFlowTask was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DeleteWorkFlowTask(DeleteWorkFlowTask *DeleteWorkFlowTask) (*DeleteWorkFlowTaskResponse, error) {
+func (p *SdmSoap) DeleteWorkFlowTask(DeleteWorkFlowTask *DeleteWorkFlowTask) (*DeleteWorkFlowTaskResponse, error) {
 	α := struct {
 		OperationDeleteWorkFlowTaskRequest `xml:"impl:deleteWorkFlowTask"`
 	}{
@@ -3584,14 +3567,14 @@ func (p *usd_WebServiceSoap) DeleteWorkFlowTask(DeleteWorkFlowTask *DeleteWorkFl
 	γ := struct {
 		OperationDeleteWorkFlowTaskResponse `xml:"deleteWorkFlowTaskResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DeleteWorkFlowTask", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DeleteWorkFlowTask", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DeleteWorkFlowTaskResponse, nil
 }
 
 // DetachChangeFromRequest was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DetachChangeFromRequest(DetachChangeFromRequest *DetachChangeFromRequest) (*DetachChangeFromRequestResponse, error) {
+func (p *SdmSoap) DetachChangeFromRequest(DetachChangeFromRequest *DetachChangeFromRequest) (*DetachChangeFromRequestResponse, error) {
 	α := struct {
 		OperationDetachChangeFromRequestRequest `xml:"impl:detachChangeFromRequest"`
 	}{
@@ -3603,14 +3586,14 @@ func (p *usd_WebServiceSoap) DetachChangeFromRequest(DetachChangeFromRequest *De
 	γ := struct {
 		OperationDetachChangeFromRequestResponse `xml:"detachChangeFromRequestResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DetachChangeFromRequest", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DetachChangeFromRequest", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DetachChangeFromRequestResponse, nil
 }
 
 // DoQuery was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DoQuery(DoQuery *DoQuery) (*DoQueryResponse, error) {
+func (p *SdmSoap) DoQuery(DoQuery *DoQuery) (*DoQueryResponse, error) {
 	α := struct {
 		OperationDoQueryRequest `xml:"impl:doQuery"`
 	}{
@@ -3622,14 +3605,14 @@ func (p *usd_WebServiceSoap) DoQuery(DoQuery *DoQuery) (*DoQueryResponse, error)
 	γ := struct {
 		OperationDoQueryResponse `xml:"doQueryResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DoQuery", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DoQuery", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DoQueryResponse, nil
 }
 
 // DoSelect was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DoSelect(DoSelect *DoSelect) (*DoSelectResponse, error) {
+func (p *SdmSoap) DoSelect(DoSelect *DoSelect) (*DoSelectResponse, error) {
 	α := struct {
 		OperationDoSelectRequest `xml:"impl:doSelect"`
 	}{
@@ -3641,14 +3624,14 @@ func (p *usd_WebServiceSoap) DoSelect(DoSelect *DoSelect) (*DoSelectResponse, er
 	γ := struct {
 		OperationDoSelectResponse `xml:"doSelectResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DoSelect", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DoSelect", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DoSelectResponse, nil
 }
 
 // DoSelectKD was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) DoSelectKD(DoSelectKD *DoSelectKD) (*DoSelectKDResponse, error) {
+func (p *SdmSoap) DoSelectKD(DoSelectKD *DoSelectKD) (*DoSelectKDResponse, error) {
 	α := struct {
 		OperationDoSelectKDRequest `xml:"impl:doSelectKD"`
 	}{
@@ -3660,14 +3643,14 @@ func (p *usd_WebServiceSoap) DoSelectKD(DoSelectKD *DoSelectKD) (*DoSelectKDResp
 	γ := struct {
 		OperationDoSelectKDResponse `xml:"doSelectKDResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("DoSelectKD", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("DoSelectKD", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.DoSelectKDResponse, nil
 }
 
 // Escalate was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Escalate(Escalate *Escalate) (*EscalateResponse, error) {
+func (p *SdmSoap) Escalate(Escalate *Escalate) (*EscalateResponse, error) {
 	α := struct {
 		OperationEscalateRequest `xml:"impl:escalate"`
 	}{
@@ -3679,14 +3662,14 @@ func (p *usd_WebServiceSoap) Escalate(Escalate *Escalate) (*EscalateResponse, er
 	γ := struct {
 		OperationEscalateResponse `xml:"escalateResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Escalate", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Escalate", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.EscalateResponse, nil
 }
 
 // Faq was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Faq(Faq *Faq) (*FaqResponse, error) {
+func (p *SdmSoap) Faq(Faq *Faq) (*FaqResponse, error) {
 	α := struct {
 		OperationFaqRequest `xml:"impl:faq"`
 	}{
@@ -3698,14 +3681,14 @@ func (p *usd_WebServiceSoap) Faq(Faq *Faq) (*FaqResponse, error) {
 	γ := struct {
 		OperationFaqResponse `xml:"faqResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Faq", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Faq", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.FaqResponse, nil
 }
 
 // FindContacts was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) FindContacts(FindContacts *FindContacts) (*FindContactsResponse, error) {
+func (p *SdmSoap) FindContacts(FindContacts *FindContacts) (*FindContactsResponse, error) {
 	α := struct {
 		OperationFindContactsRequest `xml:"impl:findContacts"`
 	}{
@@ -3717,14 +3700,14 @@ func (p *usd_WebServiceSoap) FindContacts(FindContacts *FindContacts) (*FindCont
 	γ := struct {
 		OperationFindContactsResponse `xml:"findContactsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("FindContacts", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("FindContacts", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.FindContactsResponse, nil
 }
 
 // FreeListHandles was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) FreeListHandles(FreeListHandles *FreeListHandles) (*FreeListHandlesResponse, error) {
+func (p *SdmSoap) FreeListHandles(FreeListHandles *FreeListHandles) (*FreeListHandlesResponse, error) {
 	α := struct {
 		OperationFreeListHandlesRequest `xml:"impl:freeListHandles"`
 	}{
@@ -3736,14 +3719,14 @@ func (p *usd_WebServiceSoap) FreeListHandles(FreeListHandles *FreeListHandles) (
 	γ := struct {
 		OperationFreeListHandlesResponse `xml:"freeListHandlesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("FreeListHandles", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("FreeListHandles", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.FreeListHandlesResponse, nil
 }
 
 // GetAccessTypeForContact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetAccessTypeForContact(GetAccessTypeForContact *GetAccessTypeForContact) (*GetAccessTypeForContactResponse, error) {
+func (p *SdmSoap) GetAccessTypeForContact(GetAccessTypeForContact *GetAccessTypeForContact) (*GetAccessTypeForContactResponse, error) {
 	α := struct {
 		OperationGetAccessTypeForContactRequest `xml:"impl:getAccessTypeForContact"`
 	}{
@@ -3755,14 +3738,14 @@ func (p *usd_WebServiceSoap) GetAccessTypeForContact(GetAccessTypeForContact *Ge
 	γ := struct {
 		OperationGetAccessTypeForContactResponse `xml:"getAccessTypeForContactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetAccessTypeForContact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetAccessTypeForContact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetAccessTypeForContactResponse, nil
 }
 
 // GetArtifact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetArtifact(GetArtifact *GetArtifact) (*GetArtifactResponse, error) {
+func (p *SdmSoap) GetArtifact(GetArtifact *GetArtifact) (*GetArtifactResponse, error) {
 	α := struct {
 		OperationGetArtifactRequest `xml:"impl:getArtifact"`
 	}{
@@ -3774,14 +3757,14 @@ func (p *usd_WebServiceSoap) GetArtifact(GetArtifact *GetArtifact) (*GetArtifact
 	γ := struct {
 		OperationGetArtifactResponse `xml:"getArtifactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetArtifact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetArtifact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetArtifactResponse, nil
 }
 
 // GetAssetExtensionInformation was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetAssetExtensionInformation(GetAssetExtensionInformation *GetAssetExtensionInformation) (*GetAssetExtensionInformationResponse, error) {
+func (p *SdmSoap) GetAssetExtensionInformation(GetAssetExtensionInformation *GetAssetExtensionInformation) (*GetAssetExtensionInformationResponse, error) {
 	α := struct {
 		OperationGetAssetExtensionInformationRequest `xml:"impl:getAssetExtensionInformation"`
 	}{
@@ -3793,14 +3776,14 @@ func (p *usd_WebServiceSoap) GetAssetExtensionInformation(GetAssetExtensionInfor
 	γ := struct {
 		OperationGetAssetExtensionInformationResponse `xml:"getAssetExtensionInformationResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetAssetExtensionInformation", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetAssetExtensionInformation", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetAssetExtensionInformationResponse, nil
 }
 
 // GetAttmntInfo was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetAttmntInfo(GetAttmntInfo *GetAttmntInfo) (*GetAttmntInfoResponse, error) {
+func (p *SdmSoap) GetAttmntInfo(GetAttmntInfo *GetAttmntInfo) (*GetAttmntInfoResponse, error) {
 	α := struct {
 		OperationGetAttmntInfoRequest `xml:"impl:getAttmntInfo"`
 	}{
@@ -3812,14 +3795,14 @@ func (p *usd_WebServiceSoap) GetAttmntInfo(GetAttmntInfo *GetAttmntInfo) (*GetAt
 	γ := struct {
 		OperationGetAttmntInfoResponse `xml:"getAttmntInfoResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetAttmntInfo", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetAttmntInfo", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetAttmntInfoResponse, nil
 }
 
 // GetAttmntList was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetAttmntList(GetAttmntList *GetAttmntList) (*GetAttmntListResponse, error) {
+func (p *SdmSoap) GetAttmntList(GetAttmntList *GetAttmntList) (*GetAttmntListResponse, error) {
 	α := struct {
 		OperationGetAttmntListRequest `xml:"impl:getAttmntList"`
 	}{
@@ -3831,14 +3814,14 @@ func (p *usd_WebServiceSoap) GetAttmntList(GetAttmntList *GetAttmntList) (*GetAt
 	γ := struct {
 		OperationGetAttmntListResponse `xml:"getAttmntListResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetAttmntList", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetAttmntList", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetAttmntListResponse, nil
 }
 
 // GetAttmntListPerKD was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetAttmntListPerKD(GetAttmntListPerKD *GetAttmntListPerKD) (*GetAttmntListPerKDResponse, error) {
+func (p *SdmSoap) GetAttmntListPerKD(GetAttmntListPerKD *GetAttmntListPerKD) (*GetAttmntListPerKDResponse, error) {
 	α := struct {
 		OperationGetAttmntListPerKDRequest `xml:"impl:getAttmntListPerKD"`
 	}{
@@ -3850,14 +3833,14 @@ func (p *usd_WebServiceSoap) GetAttmntListPerKD(GetAttmntListPerKD *GetAttmntLis
 	γ := struct {
 		OperationGetAttmntListPerKDResponse `xml:"getAttmntListPerKDResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetAttmntListPerKD", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetAttmntListPerKD", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetAttmntListPerKDResponse, nil
 }
 
 // GetBookmarks was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetBookmarks(GetBookmarks *GetBookmarks) (*GetBookmarksResponse, error) {
+func (p *SdmSoap) GetBookmarks(GetBookmarks *GetBookmarks) (*GetBookmarksResponse, error) {
 	α := struct {
 		OperationGetBookmarksRequest `xml:"impl:getBookmarks"`
 	}{
@@ -3869,14 +3852,14 @@ func (p *usd_WebServiceSoap) GetBookmarks(GetBookmarks *GetBookmarks) (*GetBookm
 	γ := struct {
 		OperationGetBookmarksResponse `xml:"getBookmarksResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetBookmarks", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetBookmarks", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetBookmarksResponse, nil
 }
 
 // GetBopsid was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetBopsid(GetBopsid *GetBopsid) (*GetBopsidResponse, error) {
+func (p *SdmSoap) GetBopsid(GetBopsid *GetBopsid) (*GetBopsidResponse, error) {
 	α := struct {
 		OperationGetBopsidRequest `xml:"impl:getBopsid"`
 	}{
@@ -3888,14 +3871,14 @@ func (p *usd_WebServiceSoap) GetBopsid(GetBopsid *GetBopsid) (*GetBopsidResponse
 	γ := struct {
 		OperationGetBopsidResponse `xml:"getBopsidResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetBopsid", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetBopsid", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetBopsidResponse, nil
 }
 
 // GetCategory was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetCategory(GetCategory *GetCategory) (*GetCategoryResponse, error) {
+func (p *SdmSoap) GetCategory(GetCategory *GetCategory) (*GetCategoryResponse, error) {
 	α := struct {
 		OperationGetCategoryRequest `xml:"impl:getCategory"`
 	}{
@@ -3907,14 +3890,14 @@ func (p *usd_WebServiceSoap) GetCategory(GetCategory *GetCategory) (*GetCategory
 	γ := struct {
 		OperationGetCategoryResponse `xml:"getCategoryResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetCategory", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetCategory", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetCategoryResponse, nil
 }
 
 // GetComments was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetComments(GetComments *GetComments) (*GetCommentsResponse, error) {
+func (p *SdmSoap) GetComments(GetComments *GetComments) (*GetCommentsResponse, error) {
 	α := struct {
 		OperationGetCommentsRequest `xml:"impl:getComments"`
 	}{
@@ -3926,14 +3909,14 @@ func (p *usd_WebServiceSoap) GetComments(GetComments *GetComments) (*GetComments
 	γ := struct {
 		OperationGetCommentsResponse `xml:"getCommentsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetComments", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetComments", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetCommentsResponse, nil
 }
 
 // GetConfigurationMode was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetConfigurationMode(GetConfigurationMode *GetConfigurationMode) (*GetConfigurationModeResponse, error) {
+func (p *SdmSoap) GetConfigurationMode(GetConfigurationMode *GetConfigurationMode) (*GetConfigurationModeResponse, error) {
 	α := struct {
 		OperationGetConfigurationModeRequest `xml:"impl:getConfigurationMode"`
 	}{
@@ -3945,14 +3928,14 @@ func (p *usd_WebServiceSoap) GetConfigurationMode(GetConfigurationMode *GetConfi
 	γ := struct {
 		OperationGetConfigurationModeResponse `xml:"getConfigurationModeResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetConfigurationMode", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetConfigurationMode", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetConfigurationModeResponse, nil
 }
 
 // GetContact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetContact(GetContact *GetContact) (*GetContactResponse, error) {
+func (p *SdmSoap) GetContact(GetContact *GetContact) (*GetContactResponse, error) {
 	α := struct {
 		OperationGetContactRequest `xml:"impl:getContact"`
 	}{
@@ -3964,14 +3947,14 @@ func (p *usd_WebServiceSoap) GetContact(GetContact *GetContact) (*GetContactResp
 	γ := struct {
 		OperationGetContactResponse `xml:"getContactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetContact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetContact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetContactResponse, nil
 }
 
 // GetDecisionTrees was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetDecisionTrees(GetDecisionTrees *GetDecisionTrees) (*GetDecisionTreesResponse, error) {
+func (p *SdmSoap) GetDecisionTrees(GetDecisionTrees *GetDecisionTrees) (*GetDecisionTreesResponse, error) {
 	α := struct {
 		OperationGetDecisionTreesRequest `xml:"impl:getDecisionTrees"`
 	}{
@@ -3983,14 +3966,14 @@ func (p *usd_WebServiceSoap) GetDecisionTrees(GetDecisionTrees *GetDecisionTrees
 	γ := struct {
 		OperationGetDecisionTreesResponse `xml:"getDecisionTreesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetDecisionTrees", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetDecisionTrees", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetDecisionTreesResponse, nil
 }
 
 // GetDependentAttrControls was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetDependentAttrControls(GetDependentAttrControls *GetDependentAttrControls) (*GetDependentAttrControlsResponse, error) {
+func (p *SdmSoap) GetDependentAttrControls(GetDependentAttrControls *GetDependentAttrControls) (*GetDependentAttrControlsResponse, error) {
 	α := struct {
 		OperationGetDependentAttrControlsRequest `xml:"impl:getDependentAttrControls"`
 	}{
@@ -4002,14 +3985,14 @@ func (p *usd_WebServiceSoap) GetDependentAttrControls(GetDependentAttrControls *
 	γ := struct {
 		OperationGetDependentAttrControlsResponse `xml:"getDependentAttrControlsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetDependentAttrControls", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetDependentAttrControls", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetDependentAttrControlsResponse, nil
 }
 
 // GetDocument was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetDocument(GetDocument *GetDocument) (*GetDocumentResponse, error) {
+func (p *SdmSoap) GetDocument(GetDocument *GetDocument) (*GetDocumentResponse, error) {
 	α := struct {
 		OperationGetDocumentRequest `xml:"impl:getDocument"`
 	}{
@@ -4021,14 +4004,14 @@ func (p *usd_WebServiceSoap) GetDocument(GetDocument *GetDocument) (*GetDocument
 	γ := struct {
 		OperationGetDocumentResponse `xml:"getDocumentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetDocument", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetDocument", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetDocumentResponse, nil
 }
 
 // GetDocumentTypes was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetDocumentTypes(GetDocumentTypes *GetDocumentTypes) (*GetDocumentTypesResponse, error) {
+func (p *SdmSoap) GetDocumentTypes(GetDocumentTypes *GetDocumentTypes) (*GetDocumentTypesResponse, error) {
 	α := struct {
 		OperationGetDocumentTypesRequest `xml:"impl:getDocumentTypes"`
 	}{
@@ -4040,14 +4023,14 @@ func (p *usd_WebServiceSoap) GetDocumentTypes(GetDocumentTypes *GetDocumentTypes
 	γ := struct {
 		OperationGetDocumentTypesResponse `xml:"getDocumentTypesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetDocumentTypes", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetDocumentTypes", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetDocumentTypesResponse, nil
 }
 
 // GetDocumentsByIDs was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetDocumentsByIDs(GetDocumentsByIDs *GetDocumentsByIDs) (*GetDocumentsByIDsResponse, error) {
+func (p *SdmSoap) GetDocumentsByIDs(GetDocumentsByIDs *GetDocumentsByIDs) (*GetDocumentsByIDsResponse, error) {
 	α := struct {
 		OperationGetDocumentsByIDsRequest `xml:"impl:getDocumentsByIDs"`
 	}{
@@ -4059,14 +4042,14 @@ func (p *usd_WebServiceSoap) GetDocumentsByIDs(GetDocumentsByIDs *GetDocumentsBy
 	γ := struct {
 		OperationGetDocumentsByIDsResponse `xml:"getDocumentsByIDsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetDocumentsByIDs", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetDocumentsByIDs", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetDocumentsByIDsResponse, nil
 }
 
 // GetFolderInfo was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetFolderInfo(GetFolderInfo *GetFolderInfo) (*GetFolderInfoResponse, error) {
+func (p *SdmSoap) GetFolderInfo(GetFolderInfo *GetFolderInfo) (*GetFolderInfoResponse, error) {
 	α := struct {
 		OperationGetFolderInfoRequest `xml:"impl:getFolderInfo"`
 	}{
@@ -4078,14 +4061,14 @@ func (p *usd_WebServiceSoap) GetFolderInfo(GetFolderInfo *GetFolderInfo) (*GetFo
 	γ := struct {
 		OperationGetFolderInfoResponse `xml:"getFolderInfoResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetFolderInfo", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetFolderInfo", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetFolderInfoResponse, nil
 }
 
 // GetFolderList was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetFolderList(GetFolderList *GetFolderList) (*GetFolderListResponse, error) {
+func (p *SdmSoap) GetFolderList(GetFolderList *GetFolderList) (*GetFolderListResponse, error) {
 	α := struct {
 		OperationGetFolderListRequest `xml:"impl:getFolderList"`
 	}{
@@ -4097,14 +4080,14 @@ func (p *usd_WebServiceSoap) GetFolderList(GetFolderList *GetFolderList) (*GetFo
 	γ := struct {
 		OperationGetFolderListResponse `xml:"getFolderListResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetFolderList", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetFolderList", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetFolderListResponse, nil
 }
 
 // GetGroupMemberListValues was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetGroupMemberListValues(GetGroupMemberListValues *GetGroupMemberListValues) (*GetGroupMemberListValuesResponse, error) {
+func (p *SdmSoap) GetGroupMemberListValues(GetGroupMemberListValues *GetGroupMemberListValues) (*GetGroupMemberListValuesResponse, error) {
 	α := struct {
 		OperationGetGroupMemberListValuesRequest `xml:"impl:getGroupMemberListValues"`
 	}{
@@ -4116,14 +4099,14 @@ func (p *usd_WebServiceSoap) GetGroupMemberListValues(GetGroupMemberListValues *
 	γ := struct {
 		OperationGetGroupMemberListValuesResponse `xml:"getGroupMemberListValuesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetGroupMemberListValues", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetGroupMemberListValues", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetGroupMemberListValuesResponse, nil
 }
 
 // GetHandleForUserid was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetHandleForUserid(GetHandleForUserid *GetHandleForUserid) (*GetHandleForUseridResponse, error) {
+func (p *SdmSoap) GetHandleForUserid(GetHandleForUserid *GetHandleForUserid) (*GetHandleForUseridResponse, error) {
 	α := struct {
 		OperationGetHandleForUseridRequest `xml:"impl:getHandleForUserid"`
 	}{
@@ -4135,14 +4118,14 @@ func (p *usd_WebServiceSoap) GetHandleForUserid(GetHandleForUserid *GetHandleFor
 	γ := struct {
 		OperationGetHandleForUseridResponse `xml:"getHandleForUseridResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetHandleForUserid", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetHandleForUserid", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetHandleForUseridResponse, nil
 }
 
 // GetKDListPerAttmnt was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetKDListPerAttmnt(GetKDListPerAttmnt *GetKDListPerAttmnt) (*GetKDListPerAttmntResponse, error) {
+func (p *SdmSoap) GetKDListPerAttmnt(GetKDListPerAttmnt *GetKDListPerAttmnt) (*GetKDListPerAttmntResponse, error) {
 	α := struct {
 		OperationGetKDListPerAttmntRequest `xml:"impl:getKDListPerAttmnt"`
 	}{
@@ -4154,14 +4137,14 @@ func (p *usd_WebServiceSoap) GetKDListPerAttmnt(GetKDListPerAttmnt *GetKDListPer
 	γ := struct {
 		OperationGetKDListPerAttmntResponse `xml:"getKDListPerAttmntResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetKDListPerAttmnt", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetKDListPerAttmnt", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetKDListPerAttmntResponse, nil
 }
 
 // GetListValues was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetListValues(GetListValues *GetListValues) (*GetListValuesResponse, error) {
+func (p *SdmSoap) GetListValues(GetListValues *GetListValues) (*GetListValuesResponse, error) {
 	α := struct {
 		OperationGetListValuesRequest `xml:"impl:getListValues"`
 	}{
@@ -4173,14 +4156,14 @@ func (p *usd_WebServiceSoap) GetListValues(GetListValues *GetListValues) (*GetLi
 	γ := struct {
 		OperationGetListValuesResponse `xml:"getListValuesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetListValues", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetListValues", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetListValuesResponse, nil
 }
 
 // GetLrelLength was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetLrelLength(GetLrelLength *GetLrelLength) (*GetLrelLengthResponse, error) {
+func (p *SdmSoap) GetLrelLength(GetLrelLength *GetLrelLength) (*GetLrelLengthResponse, error) {
 	α := struct {
 		OperationGetLrelLengthRequest `xml:"impl:getLrelLength"`
 	}{
@@ -4192,14 +4175,14 @@ func (p *usd_WebServiceSoap) GetLrelLength(GetLrelLength *GetLrelLength) (*GetLr
 	γ := struct {
 		OperationGetLrelLengthResponse `xml:"getLrelLengthResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetLrelLength", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetLrelLength", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetLrelLengthResponse, nil
 }
 
 // GetLrelValues was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetLrelValues(GetLrelValues *GetLrelValues) (*GetLrelValuesResponse, error) {
+func (p *SdmSoap) GetLrelValues(GetLrelValues *GetLrelValues) (*GetLrelValuesResponse, error) {
 	α := struct {
 		OperationGetLrelValuesRequest `xml:"impl:getLrelValues"`
 	}{
@@ -4211,14 +4194,14 @@ func (p *usd_WebServiceSoap) GetLrelValues(GetLrelValues *GetLrelValues) (*GetLr
 	γ := struct {
 		OperationGetLrelValuesResponse `xml:"getLrelValuesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetLrelValues", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetLrelValues", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetLrelValuesResponse, nil
 }
 
 // GetNotificationsForContact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetNotificationsForContact(GetNotificationsForContact *GetNotificationsForContact) (*GetNotificationsForContactResponse, error) {
+func (p *SdmSoap) GetNotificationsForContact(GetNotificationsForContact *GetNotificationsForContact) (*GetNotificationsForContactResponse, error) {
 	α := struct {
 		OperationGetNotificationsForContactRequest `xml:"impl:getNotificationsForContact"`
 	}{
@@ -4230,14 +4213,14 @@ func (p *usd_WebServiceSoap) GetNotificationsForContact(GetNotificationsForConta
 	γ := struct {
 		OperationGetNotificationsForContactResponse `xml:"getNotificationsForContactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetNotificationsForContact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetNotificationsForContact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetNotificationsForContactResponse, nil
 }
 
 // GetObjectTypeInformation was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetObjectTypeInformation(GetObjectTypeInformation *GetObjectTypeInformation) (*GetObjectTypeInformationResponse, error) {
+func (p *SdmSoap) GetObjectTypeInformation(GetObjectTypeInformation *GetObjectTypeInformation) (*GetObjectTypeInformationResponse, error) {
 	α := struct {
 		OperationGetObjectTypeInformationRequest `xml:"impl:getObjectTypeInformation"`
 	}{
@@ -4249,14 +4232,14 @@ func (p *usd_WebServiceSoap) GetObjectTypeInformation(GetObjectTypeInformation *
 	γ := struct {
 		OperationGetObjectTypeInformationResponse `xml:"getObjectTypeInformationResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetObjectTypeInformation", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetObjectTypeInformation", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetObjectTypeInformationResponse, nil
 }
 
 // GetObjectValues was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetObjectValues(GetObjectValues *GetObjectValues) (*GetObjectValuesResponse, error) {
+func (p *SdmSoap) GetObjectValues(GetObjectValues *GetObjectValues) (*GetObjectValuesResponse, error) {
 	α := struct {
 		OperationGetObjectValuesRequest `xml:"impl:getObjectValues"`
 	}{
@@ -4268,14 +4251,14 @@ func (p *usd_WebServiceSoap) GetObjectValues(GetObjectValues *GetObjectValues) (
 	γ := struct {
 		OperationGetObjectValuesResponse `xml:"getObjectValuesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetObjectValues", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetObjectValues", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetObjectValuesResponse, nil
 }
 
 // GetPendingChangeTaskListForContact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetPendingChangeTaskListForContact(GetPendingChangeTaskListForContact *GetPendingChangeTaskListForContact) (*GetPendingChangeTaskListForContactResponse, error) {
+func (p *SdmSoap) GetPendingChangeTaskListForContact(GetPendingChangeTaskListForContact *GetPendingChangeTaskListForContact) (*GetPendingChangeTaskListForContactResponse, error) {
 	α := struct {
 		OperationGetPendingChangeTaskListForContactRequest `xml:"impl:getPendingChangeTaskListForContact"`
 	}{
@@ -4287,14 +4270,14 @@ func (p *usd_WebServiceSoap) GetPendingChangeTaskListForContact(GetPendingChange
 	γ := struct {
 		OperationGetPendingChangeTaskListForContactResponse `xml:"getPendingChangeTaskListForContactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetPendingChangeTaskListForContact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetPendingChangeTaskListForContact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetPendingChangeTaskListForContactResponse, nil
 }
 
 // GetPendingIssueTaskListForContact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetPendingIssueTaskListForContact(GetPendingIssueTaskListForContact *GetPendingIssueTaskListForContact) (*GetPendingIssueTaskListForContactResponse, error) {
+func (p *SdmSoap) GetPendingIssueTaskListForContact(GetPendingIssueTaskListForContact *GetPendingIssueTaskListForContact) (*GetPendingIssueTaskListForContactResponse, error) {
 	α := struct {
 		OperationGetPendingIssueTaskListForContactRequest `xml:"impl:getPendingIssueTaskListForContact"`
 	}{
@@ -4306,14 +4289,14 @@ func (p *usd_WebServiceSoap) GetPendingIssueTaskListForContact(GetPendingIssueTa
 	γ := struct {
 		OperationGetPendingIssueTaskListForContactResponse `xml:"getPendingIssueTaskListForContactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetPendingIssueTaskListForContact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetPendingIssueTaskListForContact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetPendingIssueTaskListForContactResponse, nil
 }
 
 // GetPermissionGroups was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetPermissionGroups(GetPermissionGroups *GetPermissionGroups) (*GetPermissionGroupsResponse, error) {
+func (p *SdmSoap) GetPermissionGroups(GetPermissionGroups *GetPermissionGroups) (*GetPermissionGroupsResponse, error) {
 	α := struct {
 		OperationGetPermissionGroupsRequest `xml:"impl:getPermissionGroups"`
 	}{
@@ -4325,14 +4308,14 @@ func (p *usd_WebServiceSoap) GetPermissionGroups(GetPermissionGroups *GetPermiss
 	γ := struct {
 		OperationGetPermissionGroupsResponse `xml:"getPermissionGroupsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetPermissionGroups", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetPermissionGroups", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetPermissionGroupsResponse, nil
 }
 
 // GetPolicyInfo was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetPolicyInfo(GetPolicyInfo *GetPolicyInfo) (*GetPolicyInfoResponse, error) {
+func (p *SdmSoap) GetPolicyInfo(GetPolicyInfo *GetPolicyInfo) (*GetPolicyInfoResponse, error) {
 	α := struct {
 		OperationGetPolicyInfoRequest `xml:"impl:getPolicyInfo"`
 	}{
@@ -4344,14 +4327,14 @@ func (p *usd_WebServiceSoap) GetPolicyInfo(GetPolicyInfo *GetPolicyInfo) (*GetPo
 	γ := struct {
 		OperationGetPolicyInfoResponse `xml:"getPolicyInfoResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetPolicyInfo", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetPolicyInfo", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetPolicyInfoResponse, nil
 }
 
 // GetPriorities was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetPriorities(GetPriorities *GetPriorities) (*GetPrioritiesResponse, error) {
+func (p *SdmSoap) GetPriorities(GetPriorities *GetPriorities) (*GetPrioritiesResponse, error) {
 	α := struct {
 		OperationGetPrioritiesRequest `xml:"impl:getPriorities"`
 	}{
@@ -4363,14 +4346,14 @@ func (p *usd_WebServiceSoap) GetPriorities(GetPriorities *GetPriorities) (*GetPr
 	γ := struct {
 		OperationGetPrioritiesResponse `xml:"getPrioritiesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetPriorities", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetPriorities", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetPrioritiesResponse, nil
 }
 
 // GetPropertyInfoForCategory was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetPropertyInfoForCategory(GetPropertyInfoForCategory *GetPropertyInfoForCategory) (*GetPropertyInfoForCategoryResponse, error) {
+func (p *SdmSoap) GetPropertyInfoForCategory(GetPropertyInfoForCategory *GetPropertyInfoForCategory) (*GetPropertyInfoForCategoryResponse, error) {
 	α := struct {
 		OperationGetPropertyInfoForCategoryRequest `xml:"impl:getPropertyInfoForCategory"`
 	}{
@@ -4382,14 +4365,14 @@ func (p *usd_WebServiceSoap) GetPropertyInfoForCategory(GetPropertyInfoForCatego
 	γ := struct {
 		OperationGetPropertyInfoForCategoryResponse `xml:"getPropertyInfoForCategoryResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetPropertyInfoForCategory", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetPropertyInfoForCategory", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetPropertyInfoForCategoryResponse, nil
 }
 
 // GetQuestionsAsked was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetQuestionsAsked(GetQuestionsAsked *GetQuestionsAsked) (*GetQuestionsAskedResponse, error) {
+func (p *SdmSoap) GetQuestionsAsked(GetQuestionsAsked *GetQuestionsAsked) (*GetQuestionsAskedResponse, error) {
 	α := struct {
 		OperationGetQuestionsAskedRequest `xml:"impl:getQuestionsAsked"`
 	}{
@@ -4401,14 +4384,14 @@ func (p *usd_WebServiceSoap) GetQuestionsAsked(GetQuestionsAsked *GetQuestionsAs
 	γ := struct {
 		OperationGetQuestionsAskedResponse `xml:"getQuestionsAskedResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetQuestionsAsked", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetQuestionsAsked", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetQuestionsAskedResponse, nil
 }
 
 // GetRelatedList was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetRelatedList(GetRelatedList *GetRelatedList) (*GetRelatedListResponse, error) {
+func (p *SdmSoap) GetRelatedList(GetRelatedList *GetRelatedList) (*GetRelatedListResponse, error) {
 	α := struct {
 		OperationGetRelatedListRequest `xml:"impl:getRelatedList"`
 	}{
@@ -4420,14 +4403,14 @@ func (p *usd_WebServiceSoap) GetRelatedList(GetRelatedList *GetRelatedList) (*Ge
 	γ := struct {
 		OperationGetRelatedListResponse `xml:"getRelatedListResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetRelatedList", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetRelatedList", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetRelatedListResponse, nil
 }
 
 // GetRelatedListValues was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetRelatedListValues(GetRelatedListValues *GetRelatedListValues) (*GetRelatedListValuesResponse, error) {
+func (p *SdmSoap) GetRelatedListValues(GetRelatedListValues *GetRelatedListValues) (*GetRelatedListValuesResponse, error) {
 	α := struct {
 		OperationGetRelatedListValuesRequest `xml:"impl:getRelatedListValues"`
 	}{
@@ -4439,14 +4422,14 @@ func (p *usd_WebServiceSoap) GetRelatedListValues(GetRelatedListValues *GetRelat
 	γ := struct {
 		OperationGetRelatedListValuesResponse `xml:"getRelatedListValuesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetRelatedListValues", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetRelatedListValues", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetRelatedListValuesResponse, nil
 }
 
 // GetRepositoryInfo was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetRepositoryInfo(GetRepositoryInfo *GetRepositoryInfo) (*GetRepositoryInfoResponse, error) {
+func (p *SdmSoap) GetRepositoryInfo(GetRepositoryInfo *GetRepositoryInfo) (*GetRepositoryInfoResponse, error) {
 	α := struct {
 		OperationGetRepositoryInfoRequest `xml:"impl:getRepositoryInfo"`
 	}{
@@ -4458,14 +4441,14 @@ func (p *usd_WebServiceSoap) GetRepositoryInfo(GetRepositoryInfo *GetRepositoryI
 	γ := struct {
 		OperationGetRepositoryInfoResponse `xml:"getRepositoryInfoResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetRepositoryInfo", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetRepositoryInfo", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetRepositoryInfoResponse, nil
 }
 
 // GetStatuses was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetStatuses(GetStatuses *GetStatuses) (*GetStatusesResponse, error) {
+func (p *SdmSoap) GetStatuses(GetStatuses *GetStatuses) (*GetStatusesResponse, error) {
 	α := struct {
 		OperationGetStatusesRequest `xml:"impl:getStatuses"`
 	}{
@@ -4477,14 +4460,14 @@ func (p *usd_WebServiceSoap) GetStatuses(GetStatuses *GetStatuses) (*GetStatuses
 	γ := struct {
 		OperationGetStatusesResponse `xml:"getStatusesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetStatuses", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetStatuses", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetStatusesResponse, nil
 }
 
 // GetTaskListValues was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetTaskListValues(GetTaskListValues *GetTaskListValues) (*GetTaskListValuesResponse, error) {
+func (p *SdmSoap) GetTaskListValues(GetTaskListValues *GetTaskListValues) (*GetTaskListValuesResponse, error) {
 	α := struct {
 		OperationGetTaskListValuesRequest `xml:"impl:getTaskListValues"`
 	}{
@@ -4496,14 +4479,14 @@ func (p *usd_WebServiceSoap) GetTaskListValues(GetTaskListValues *GetTaskListVal
 	γ := struct {
 		OperationGetTaskListValuesResponse `xml:"getTaskListValuesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetTaskListValues", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetTaskListValues", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetTaskListValuesResponse, nil
 }
 
 // GetTemplateList was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetTemplateList(GetTemplateList *GetTemplateList) (*GetTemplateListResponse, error) {
+func (p *SdmSoap) GetTemplateList(GetTemplateList *GetTemplateList) (*GetTemplateListResponse, error) {
 	α := struct {
 		OperationGetTemplateListRequest `xml:"impl:getTemplateList"`
 	}{
@@ -4515,14 +4498,14 @@ func (p *usd_WebServiceSoap) GetTemplateList(GetTemplateList *GetTemplateList) (
 	γ := struct {
 		OperationGetTemplateListResponse `xml:"getTemplateListResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetTemplateList", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetTemplateList", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetTemplateListResponse, nil
 }
 
 // GetValidTaskTransitions was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetValidTaskTransitions(GetValidTaskTransitions *GetValidTaskTransitions) (*GetValidTaskTransitionsResponse, error) {
+func (p *SdmSoap) GetValidTaskTransitions(GetValidTaskTransitions *GetValidTaskTransitions) (*GetValidTaskTransitionsResponse, error) {
 	α := struct {
 		OperationGetValidTaskTransitionsRequest `xml:"impl:getValidTaskTransitions"`
 	}{
@@ -4534,14 +4517,14 @@ func (p *usd_WebServiceSoap) GetValidTaskTransitions(GetValidTaskTransitions *Ge
 	γ := struct {
 		OperationGetValidTaskTransitionsResponse `xml:"getValidTaskTransitionsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetValidTaskTransitions", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetValidTaskTransitions", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetValidTaskTransitionsResponse, nil
 }
 
 // GetValidTransitions was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetValidTransitions(GetValidTransitions *GetValidTransitions) (*GetValidTransitionsResponse, error) {
+func (p *SdmSoap) GetValidTransitions(GetValidTransitions *GetValidTransitions) (*GetValidTransitionsResponse, error) {
 	α := struct {
 		OperationGetValidTransitionsRequest `xml:"impl:getValidTransitions"`
 	}{
@@ -4553,14 +4536,14 @@ func (p *usd_WebServiceSoap) GetValidTransitions(GetValidTransitions *GetValidTr
 	γ := struct {
 		OperationGetValidTransitionsResponse `xml:"getValidTransitionsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetValidTransitions", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetValidTransitions", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetValidTransitionsResponse, nil
 }
 
 // GetWorkFlowTemplates was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetWorkFlowTemplates(GetWorkFlowTemplates *GetWorkFlowTemplates) (*GetWorkFlowTemplatesResponse, error) {
+func (p *SdmSoap) GetWorkFlowTemplates(GetWorkFlowTemplates *GetWorkFlowTemplates) (*GetWorkFlowTemplatesResponse, error) {
 	α := struct {
 		OperationGetWorkFlowTemplatesRequest `xml:"impl:getWorkFlowTemplates"`
 	}{
@@ -4572,14 +4555,14 @@ func (p *usd_WebServiceSoap) GetWorkFlowTemplates(GetWorkFlowTemplates *GetWorkF
 	γ := struct {
 		OperationGetWorkFlowTemplatesResponse `xml:"getWorkFlowTemplatesResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetWorkFlowTemplates", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetWorkFlowTemplates", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetWorkFlowTemplatesResponse, nil
 }
 
 // GetWorkflowTemplateList was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) GetWorkflowTemplateList(GetWorkflowTemplateList *GetWorkflowTemplateList) (*GetWorkflowTemplateListResponse, error) {
+func (p *SdmSoap) GetWorkflowTemplateList(GetWorkflowTemplateList *GetWorkflowTemplateList) (*GetWorkflowTemplateListResponse, error) {
 	α := struct {
 		OperationGetWorkflowTemplateListRequest `xml:"impl:getWorkflowTemplateList"`
 	}{
@@ -4591,14 +4574,14 @@ func (p *usd_WebServiceSoap) GetWorkflowTemplateList(GetWorkflowTemplateList *Ge
 	γ := struct {
 		OperationGetWorkflowTemplateListResponse `xml:"getWorkflowTemplateListResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("GetWorkflowTemplateList", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("GetWorkflowTemplateList", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.GetWorkflowTemplateListResponse, nil
 }
 
 // Impersonate was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Impersonate(Impersonate *Impersonate) (*ImpersonateResponse, error) {
+func (p *SdmSoap) Impersonate(Impersonate *Impersonate) (*ImpersonateResponse, error) {
 	α := struct {
 		OperationImpersonateRequest `xml:"impl:impersonate"`
 	}{
@@ -4610,14 +4593,14 @@ func (p *usd_WebServiceSoap) Impersonate(Impersonate *Impersonate) (*Impersonate
 	γ := struct {
 		OperationImpersonateResponse `xml:"impersonateResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Impersonate", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Impersonate", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.ImpersonateResponse, nil
 }
 
 // IsAttmntLinkedKD was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) IsAttmntLinkedKD(IsAttmntLinkedKD *IsAttmntLinkedKD) (*IsAttmntLinkedKDResponse, error) {
+func (p *SdmSoap) IsAttmntLinkedKD(IsAttmntLinkedKD *IsAttmntLinkedKD) (*IsAttmntLinkedKDResponse, error) {
 	α := struct {
 		OperationIsAttmntLinkedKDRequest `xml:"impl:isAttmntLinkedKD"`
 	}{
@@ -4629,14 +4612,14 @@ func (p *usd_WebServiceSoap) IsAttmntLinkedKD(IsAttmntLinkedKD *IsAttmntLinkedKD
 	γ := struct {
 		OperationIsAttmntLinkedKDResponse `xml:"isAttmntLinkedKDResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("IsAttmntLinkedKD", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("IsAttmntLinkedKD", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.IsAttmntLinkedKDResponse, nil
 }
 
 // LogComment was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) LogComment(LogComment *LogComment) (*LogCommentResponse, error) {
+func (p *SdmSoap) LogComment(LogComment *LogComment) (*LogCommentResponse, error) {
 	α := struct {
 		OperationLogCommentRequest `xml:"impl:logComment"`
 	}{
@@ -4648,14 +4631,14 @@ func (p *usd_WebServiceSoap) LogComment(LogComment *LogComment) (*LogCommentResp
 	γ := struct {
 		OperationLogCommentResponse `xml:"logCommentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("LogComment", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("LogComment", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.LogCommentResponse, nil
 }
 
 // Login was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Login(Login *Login) (*LoginResponse, error) {
+func (p *SdmSoap) Login(Login *Login) (*LoginResponse, error) {
 	α := struct {
 		OperationLoginRequest `xml:"impl:login"`
 	}{
@@ -4667,14 +4650,14 @@ func (p *usd_WebServiceSoap) Login(Login *Login) (*LoginResponse, error) {
 	γ := struct {
 		OperationLoginResponse `xml:"loginResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Login", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Login", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.LoginResponse, nil
 }
 
 // LoginService was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) LoginService(LoginService *LoginService) (*LoginServiceResponse, error) {
+func (p *SdmSoap) LoginService(LoginService *LoginService) (*LoginServiceResponse, error) {
 	α := struct {
 		OperationLoginServiceRequest `xml:"impl:loginService"`
 	}{
@@ -4686,14 +4669,14 @@ func (p *usd_WebServiceSoap) LoginService(LoginService *LoginService) (*LoginSer
 	γ := struct {
 		OperationLoginServiceResponse `xml:"loginServiceResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("LoginService", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("LoginService", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.LoginServiceResponse, nil
 }
 
 // LoginServiceManaged was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) LoginServiceManaged(LoginServiceManaged *LoginServiceManaged) (*LoginServiceManagedResponse, error) {
+func (p *SdmSoap) LoginServiceManaged(LoginServiceManaged *LoginServiceManaged) (*LoginServiceManagedResponse, error) {
 	α := struct {
 		OperationLoginServiceManagedRequest `xml:"impl:loginServiceManaged"`
 	}{
@@ -4705,14 +4688,14 @@ func (p *usd_WebServiceSoap) LoginServiceManaged(LoginServiceManaged *LoginServi
 	γ := struct {
 		OperationLoginServiceManagedResponse `xml:"loginServiceManagedResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("LoginServiceManaged", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("LoginServiceManaged", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.LoginServiceManagedResponse, nil
 }
 
 // LoginWithArtifact was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) LoginWithArtifact(LoginWithArtifact *LoginWithArtifact) (*LoginWithArtifactResponse, error) {
+func (p *SdmSoap) LoginWithArtifact(LoginWithArtifact *LoginWithArtifact) (*LoginWithArtifactResponse, error) {
 	α := struct {
 		OperationLoginWithArtifactRequest `xml:"impl:loginWithArtifact"`
 	}{
@@ -4724,14 +4707,14 @@ func (p *usd_WebServiceSoap) LoginWithArtifact(LoginWithArtifact *LoginWithArtif
 	γ := struct {
 		OperationLoginWithArtifactResponse `xml:"loginWithArtifactResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("LoginWithArtifact", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("LoginWithArtifact", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.LoginWithArtifactResponse, nil
 }
 
 // Logout was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Logout(Logout *Logout) (*LogoutResponse, error) {
+func (p *SdmSoap) Logout(Logout *Logout) (*LogoutResponse, error) {
 	α := struct {
 		OperationLogoutRequest `xml:"impl:logout"`
 	}{
@@ -4743,14 +4726,14 @@ func (p *usd_WebServiceSoap) Logout(Logout *Logout) (*LogoutResponse, error) {
 	γ := struct {
 		OperationLogoutResponse `xml:"logoutResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Logout", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Logout", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.LogoutResponse, nil
 }
 
 // ModifyDocument was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) ModifyDocument(ModifyDocument *ModifyDocument) (*ModifyDocumentResponse, error) {
+func (p *SdmSoap) ModifyDocument(ModifyDocument *ModifyDocument) (*ModifyDocumentResponse, error) {
 	α := struct {
 		OperationModifyDocumentRequest `xml:"impl:modifyDocument"`
 	}{
@@ -4762,14 +4745,14 @@ func (p *usd_WebServiceSoap) ModifyDocument(ModifyDocument *ModifyDocument) (*Mo
 	γ := struct {
 		OperationModifyDocumentResponse `xml:"modifyDocumentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("ModifyDocument", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("ModifyDocument", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.ModifyDocumentResponse, nil
 }
 
 // NotifyContacts was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) NotifyContacts(NotifyContacts *NotifyContacts) (*NotifyContactsResponse, error) {
+func (p *SdmSoap) NotifyContacts(NotifyContacts *NotifyContacts) (*NotifyContactsResponse, error) {
 	α := struct {
 		OperationNotifyContactsRequest `xml:"impl:notifyContacts"`
 	}{
@@ -4781,14 +4764,14 @@ func (p *usd_WebServiceSoap) NotifyContacts(NotifyContacts *NotifyContacts) (*No
 	γ := struct {
 		OperationNotifyContactsResponse `xml:"notifyContactsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("NotifyContacts", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("NotifyContacts", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.NotifyContactsResponse, nil
 }
 
 // RateDocument was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) RateDocument(RateDocument *RateDocument) (*RateDocumentResponse, error) {
+func (p *SdmSoap) RateDocument(RateDocument *RateDocument) (*RateDocumentResponse, error) {
 	α := struct {
 		OperationRateDocumentRequest `xml:"impl:rateDocument"`
 	}{
@@ -4800,14 +4783,14 @@ func (p *usd_WebServiceSoap) RateDocument(RateDocument *RateDocument) (*RateDocu
 	γ := struct {
 		OperationRateDocumentResponse `xml:"rateDocumentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("RateDocument", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("RateDocument", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.RateDocumentResponse, nil
 }
 
 // RemoveAttachment was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) RemoveAttachment(RemoveAttachment *RemoveAttachment) (*RemoveAttachmentResponse, error) {
+func (p *SdmSoap) RemoveAttachment(RemoveAttachment *RemoveAttachment) (*RemoveAttachmentResponse, error) {
 	α := struct {
 		OperationRemoveAttachmentRequest `xml:"impl:removeAttachment"`
 	}{
@@ -4819,14 +4802,14 @@ func (p *usd_WebServiceSoap) RemoveAttachment(RemoveAttachment *RemoveAttachment
 	γ := struct {
 		OperationRemoveAttachmentResponse `xml:"removeAttachmentResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("RemoveAttachment", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("RemoveAttachment", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.RemoveAttachmentResponse, nil
 }
 
 // RemoveLrelRelationships was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) RemoveLrelRelationships(RemoveLrelRelationships *RemoveLrelRelationships) (*RemoveLrelRelationshipsResponse, error) {
+func (p *SdmSoap) RemoveLrelRelationships(RemoveLrelRelationships *RemoveLrelRelationships) (*RemoveLrelRelationshipsResponse, error) {
 	α := struct {
 		OperationRemoveLrelRelationshipsRequest `xml:"impl:removeLrelRelationships"`
 	}{
@@ -4838,14 +4821,14 @@ func (p *usd_WebServiceSoap) RemoveLrelRelationships(RemoveLrelRelationships *Re
 	γ := struct {
 		OperationRemoveLrelRelationshipsResponse `xml:"removeLrelRelationshipsResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("RemoveLrelRelationships", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("RemoveLrelRelationships", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.RemoveLrelRelationshipsResponse, nil
 }
 
 // RemoveMemberFromGroup was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) RemoveMemberFromGroup(RemoveMemberFromGroup *RemoveMemberFromGroup) (*RemoveMemberFromGroupResponse, error) {
+func (p *SdmSoap) RemoveMemberFromGroup(RemoveMemberFromGroup *RemoveMemberFromGroup) (*RemoveMemberFromGroupResponse, error) {
 	α := struct {
 		OperationRemoveMemberFromGroupRequest `xml:"impl:removeMemberFromGroup"`
 	}{
@@ -4857,14 +4840,14 @@ func (p *usd_WebServiceSoap) RemoveMemberFromGroup(RemoveMemberFromGroup *Remove
 	γ := struct {
 		OperationRemoveMemberFromGroupResponse `xml:"removeMemberFromGroupResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("RemoveMemberFromGroup", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("RemoveMemberFromGroup", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.RemoveMemberFromGroupResponse, nil
 }
 
 // Search was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Search(Search *Search) (*SearchResponse, error) {
+func (p *SdmSoap) Search(Search *Search) (*SearchResponse, error) {
 	α := struct {
 		OperationSearchRequest `xml:"impl:search"`
 	}{
@@ -4876,14 +4859,14 @@ func (p *usd_WebServiceSoap) Search(Search *Search) (*SearchResponse, error) {
 	γ := struct {
 		OperationSearchResponse `xml:"searchResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Search", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Search", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.SearchResponse, nil
 }
 
 // ServerStatus was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) ServerStatus(ServerStatus *ServerStatus) (*ServerStatusResponse, error) {
+func (p *SdmSoap) ServerStatus(ServerStatus *ServerStatus) (*ServerStatusResponse, error) {
 	α := struct {
 		OperationServerStatusRequest `xml:"impl:serverStatus"`
 	}{
@@ -4895,14 +4878,14 @@ func (p *usd_WebServiceSoap) ServerStatus(ServerStatus *ServerStatus) (*ServerSt
 	γ := struct {
 		OperationServerStatusResponse `xml:"serverStatusResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("ServerStatus", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("ServerStatus", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.ServerStatusResponse, nil
 }
 
 // Transfer was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) Transfer(Transfer *Transfer) (*TransferResponse, error) {
+func (p *SdmSoap) Transfer(Transfer *Transfer) (*TransferResponse, error) {
 	α := struct {
 		OperationTransferRequest `xml:"impl:transfer"`
 	}{
@@ -4914,14 +4897,14 @@ func (p *usd_WebServiceSoap) Transfer(Transfer *Transfer) (*TransferResponse, er
 	γ := struct {
 		OperationTransferResponse `xml:"transferResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("Transfer", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("Transfer", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.TransferResponse, nil
 }
 
 // UpdateObject was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) UpdateObject(UpdateObject *UpdateObject) (*UpdateObjectResponse, error) {
+func (p *SdmSoap) UpdateObject(UpdateObject *UpdateObject) (*UpdateObjectResponse, error) {
 	α := struct {
 		OperationUpdateObjectRequest `xml:"impl:updateObject"`
 	}{
@@ -4933,14 +4916,14 @@ func (p *usd_WebServiceSoap) UpdateObject(UpdateObject *UpdateObject) (*UpdateOb
 	γ := struct {
 		OperationUpdateObjectResponse `xml:"updateObjectResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("UpdateObject", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("UpdateObject", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.UpdateObjectResponse, nil
 }
 
 // UpdateRating was auto-generated from WSDL.
-func (p *usd_WebServiceSoap) UpdateRating(UpdateRating *UpdateRating) (*UpdateRatingResponse, error) {
+func (p *SdmSoap) UpdateRating(UpdateRating *UpdateRating) (*UpdateRatingResponse, error) {
 	α := struct {
 		OperationUpdateRatingRequest `xml:"impl:updateRating"`
 	}{
@@ -4952,7 +4935,7 @@ func (p *usd_WebServiceSoap) UpdateRating(UpdateRating *UpdateRating) (*UpdateRa
 	γ := struct {
 		OperationUpdateRatingResponse `xml:"updateRatingResponse"`
 	}{}
-	if err := p.cli.RoundTripWithAction("UpdateRating", α, &γ); err != nil {
+	if err := p.RoundTripWithAction("UpdateRating", α, &γ); err != nil {
 		return nil, err
 	}
 	return γ.UpdateRatingResponse, nil

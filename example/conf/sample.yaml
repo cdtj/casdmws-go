@@ -1,0 +1,22 @@
+soap:
+  url: https://testsdm:8443/axis/services/USD_R11_WebService
+  username: sd
+  password: sd123
+  policy: Example
+  cert: ./Example.p12
+  # not implemented
+  # artifact: EEM_ARTIFACT
+
+rest:
+  url: https://testsdm:8085/caisd-rest
+  username: sd
+  password: sd123
+  repo: 1002
+  server: LOCALHOST
+  schema: application/json
+  # HmacSHA1   = 0
+  # HmacSHA256 = 1
+  # HmacSHA384 = 2
+  # HmacSHA512 = 3
+  # HmacMD5    = 4
+  hmac: 4
